@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
 
@@ -7,6 +8,20 @@ status : "idle", //idle , loading , succeeded , failed
 error : null
 
 }
+
+const postsUrl = "https://jsonplaceholder.typicode.com/posts"
+
+
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async() => {
+
+    const response = await  axios.get(postsUrl)
+    console.log([...response.data])
+    return [...response.data]
+
+
+})
+
 
 const posts = createSlice({
 
@@ -29,6 +44,8 @@ reducers : {
         }
         
     },
+
+
     dislike : (state, action) => {
         if(state.posts[action.payload].liked){
             state.posts[action.payload].liked = false
@@ -49,9 +66,22 @@ reducers : {
             state.posts[action.payload].disliked = false
 
         }
-    },
+    }
+},
 
+extraReducers(builder){
+    builder
+        .addCase(fetchPosts.pending, (state, action) => {
+            state.status = "loading"
+        })
+        .addCase(fetchPosts.fulfilled, (state, action) => {
+            state.status = "succeded"
+        })
+        .addCase(fetchPosts.rejected, (state, action) => {
+            state.status = "failed"
+        })
 }
+
 })
 
 export const {addPost, like, dislike} = posts.actions

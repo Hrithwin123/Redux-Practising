@@ -5,8 +5,9 @@ import { like, dislike } from "./postsSlice"
 function showpost(){
 
     const posts = useSelector((state) => state.posts.posts)
-    
+
     const dispatch = useDispatch()
+
 
 
     function handlelike(i){
@@ -25,6 +26,8 @@ function showpost(){
             <h1>{post.title}</h1>
             <br/>
             <p>{post.content}</p>
+            <br/>
+            <p>-{post.user}</p>
             <br/>
             <p><button onClick = {() => handlelike(ind)}>👍{post.like}</button> <button onClick = {() => handledislike(ind)}>👎{post.dislike}</button></p>
         </div>
