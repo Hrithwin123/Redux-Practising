@@ -1,44 +1,60 @@
 import { useSelector, useDispatch } from "react-redux"
 import { like, dislike } from "./postsSlice" 
+import { useState, useEffect } from "react"
+
+import { fetchPosts } from "./postsSlice"
+import PostsExcerpt from "./PostsExcerpt"
 
 
 function showpost(){
 
     const posts = useSelector((state) => state.posts.posts)
 
+    const status = useSelector((state) => state.posts.status)
+
+    const error = useSelector((state) => state.posts.status)
+
+    
     const dispatch = useDispatch()
 
 
 
-    function handlelike(i){
-        dispatch(like(i))
-    }
 
-    function handledislike(i){
-        dispatch(dislike(i))
-    }
+    useEffect(() => {
+        if(status == "idle"){
+            dispatch(fetchPosts())
+        }
+
+    }, [status, dispatch])
+
+
+
+    
 
     const heading  = posts.length >= 1 ? "Hrithwin's Posts" : null
 
 
-    const displayPost = posts.map((post, ind) => {return (
-        <div className = "post" key = {ind}>
-            <h1>{post.title}</h1>
-            <br/>
-            <p>{post.content}</p>
-            <br/>
-            <p>-{post.user}</p>
-            <br/>
-            <p><button onClick = {() => handlelike(ind)}>👍{post.like}</button> <button onClick = {() => handledislike(ind)}>👎{post.dislike}</button></p>
-        </div>
+    let content = null;
 
-
-    )})
+    if(status == "loading"){
+        content = "Loading..."
+    }
+    else if(status == "succeeded"){
+        const displayPost = posts.map((post, ind) => { 
+            return <PostsExcerpt post = {post} ind = {ind} key = {ind} />
+        })
+        displayPost.reverse()
+        content = (displayPost)
+    }
+    else if(status == "failed"){
+        content = <p>{error}</p>
+        
+    }
 
     return (
         <div>
-            <h1>{heading}</h1><br/>
-            {displayPost}
+            <center><h1>{heading}</h1><br/></center>
+            {content}
         </div>
     )
 

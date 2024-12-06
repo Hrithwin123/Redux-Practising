@@ -11,17 +11,12 @@ error : null
 
 const postsUrl = "https://jsonplaceholder.typicode.com/posts"
 
-
-
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async() => {
 
-    const response = await  axios.get(postsUrl)
-    console.log([...response.data])
+    const response = await axios.get(postsUrl)
     return [...response.data]
 
-
 })
-
 
 const posts = createSlice({
 
@@ -68,19 +63,33 @@ reducers : {
         }
     }
 },
-
 extraReducers(builder){
     builder
-        .addCase(fetchPosts.pending, (state, action) => {
-            state.status = "loading"
+    .addCase(fetchPosts.pending, (state, action) => {
+
+        state.status = "loading"
+    })
+
+    .addCase(fetchPosts.fulfilled, (state, action) => {
+
+        state.status = "succeeded"
+        const loadedPosts = action.payload.map((post) => {
+
+            return {title : post.title, content : post.body, user : "API", like : 0, dislike : 0, liked : false, disliked : false}
+
         })
-        .addCase(fetchPosts.fulfilled, (state, action) => {
-            state.status = "succeded"
-        })
-        .addCase(fetchPosts.rejected, (state, action) => {
-            state.status = "failed"
-        })
-}
+
+        state.posts = [...state.posts, ...loadedPosts]
+        
+    })
+    .addCase(fetchPosts.rejected, (state, action) => {
+
+        state.status = "failed"
+        state.error = action.error.message
+    })
+    
+}  
+
 
 })
 
