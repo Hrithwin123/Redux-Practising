@@ -17,7 +17,8 @@ function showpost(){
     
     const dispatch = useDispatch()
 
-
+    
+    const [loading, setLoading] = useState("Loading")
 
 
     useEffect(() => {
@@ -25,19 +26,24 @@ function showpost(){
             dispatch(fetchPosts())
         }
 
-    }, [status, dispatch])
+    }, [status])
 
-
-
-    
 
     const heading  = posts.length >= 1 ? "Hrithwin's Posts" : null
 
 
     let content = null;
 
+
     if(status == "loading"){
-        content = "Loading..."
+        content = (<h1>{loading}</h1>)
+        
+        let intervalid = setInterval(() => {
+            setLoading((l) => l == "Loading..." ? "Loading" : loading + ".")
+            content = (<h1>{loading}</h1>)
+
+        }, 300)
+
     }
     else if(status == "succeeded"){
         const displayPost = posts.map((post, ind) => { 
@@ -47,7 +53,7 @@ function showpost(){
         content = (displayPost)
     }
     else if(status == "failed"){
-        content = <p>{error}</p>
+        content = <h1>{error}</h1>
         
     }
 

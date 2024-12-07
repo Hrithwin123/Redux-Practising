@@ -14,8 +14,8 @@ const postsUrl = "https://jsonplaceholder.typicode.com/posts"
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async() => {
 
     const response = await axios.get(postsUrl)
-    return [...response.data]
 
+    return [...response.data]
 })
 
 const posts = createSlice({
@@ -84,7 +84,7 @@ extraReducers(builder){
     })
     .addCase(fetchPosts.rejected, (state, action) => {
 
-        state.status = "failed"
+        state.status = "Failed"
         state.error = action.error.message
     })
     
